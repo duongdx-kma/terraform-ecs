@@ -14,13 +14,14 @@ module "vpc" {
 }
 
 module "vpc-endpoint" {
-  env                     = var.env
-  tags                    = var.tags
-  vpc_id                  = module.vpc.vpc_id
-  source                  = "../modules/vpc-endpoint"
-  aws_region              = var.aws_region
-  vpc_endpoint_sg_ids     = [module.security-groups.endpoint-sg-id]
-  vpc_endpoint_subnet_ids = slice(module.vpc.private_subnets, 0, 3)
+  env                        = var.env
+  tags                       = var.tags
+  vpc_id                     = module.vpc.vpc_id
+  source                     = "../modules/vpc-endpoint"
+  aws_region                 = var.aws_region
+  vpc_endpoint_sg_ids        = [module.security-groups.endpoint-sg-id]
+  vpc_endpoint_subnet_ids    = slice(module.vpc.private_subnets, 0, 2)
+  vpc-private-route-table-id = [module.vpc.private-route-table-id]
 }
 
 # Security group module
@@ -34,7 +35,7 @@ module "security-groups" {
   alb-ingress = [{
     from_port: var.lb-listen-port
     to_port: var.lb-listen-port
-    protocol: var.lb-listen-protocol
+    protocol: "TCP"
     cidr_blocks: ["0.0.0.0/0"]
   }]
 
@@ -48,18 +49,22 @@ module "security-groups" {
     from_port: "443"
     to_port: "443"
     protocol: "TCP"
+  }, {
+    from_port: "443"
+    to_port: "443"
+    protocol: "TCP"
   }]
 }
 
 module "roles" {
   source     = "../modules/roles"
-  env        = "dev"
+  env        = var.env
   tags       = var.tags
   aws_region = var.aws_region
 }
 
 module "alb" {
-  env                   = "dev"
+  env                   = var.env
   tags                  = var.tags
   source                = "../modules/alb"
   vpc_id                = module.vpc.vpc_id
@@ -67,7 +72,7 @@ module "alb" {
   lb-listen-port        = var.lb-listen-port
   health-check-count    = 3
   lb-listen-protocol    = var.lb-listen-protocol
-  alb-public-subnet-ids = slice(module.vpc.public_subnets, 0, 3)
+  alb-public-subnet-ids = slice(module.vpc.public_subnets, 0, 2)
 }
 
 module "policies" {
@@ -78,7 +83,7 @@ module "policies" {
 }
 
 module "ecs" {
-  env                     = "dev"
+  env                     = var.env
   tags                    = var.tags
   source                  = "../modules/ecs"
   aws_region              = var.aws_region
@@ -86,7 +91,7 @@ module "ecs" {
   private-sg-ids          = [module.security-groups.instance-sg-id]
   repository-url          = "240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/my-ecr"
   target-group-arn        = module.alb.target-group-arn
-  private-subnet-ids      = slice(module.vpc.private_subnets, 0, 3)
+  private-subnet-ids      = slice(module.vpc.private_subnets, 0, 2)
   task-execution-role-arn = module.roles.ecs-task-execution-role.arn
 }
 

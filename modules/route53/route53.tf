@@ -3,7 +3,7 @@ variable "elb-zone-id" {}
 
 variable "hosted_zone_id" {}
 
-# because already have hosted_zone: duongdx.com
+# because already create hosted_zone: duongdx.com
 data "aws_route53_zone" "selected" {
   zone_id  = var.hosted_zone_id
 }

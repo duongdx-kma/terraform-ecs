@@ -10,6 +10,15 @@ resource "aws_security_group" "alb-sg" {
       cidr_blocks = ingress.value.cidr_blocks
     }
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   tags = merge({Name = "${var.env}-alb-sg"}, var.tags)
 }
 
@@ -25,6 +34,15 @@ resource "aws_security_group" "instance-sg" {
       security_groups = [aws_security_group.alb-sg.id]
     }
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
+
   tags = merge({Name = "${var.env}-instance-sg"}, var.tags)
 }
 
@@ -40,6 +58,21 @@ resource "aws_security_group" "endpoint-sg" {
       security_groups = [aws_security_group.instance-sg.id]
     }
   }
+
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"
+    cidr_blocks      = ["0.0.0.0/0"]
+  }
+
+  egress {
+    from_port        = 443
+    to_port          = 443
+    protocol         = "TCP"
+    security_groups = [aws_security_group.instance-sg.id]
+  }
+
   tags = merge({Name = "${var.env}-endpoint-sg"}, var.tags)
 }
 

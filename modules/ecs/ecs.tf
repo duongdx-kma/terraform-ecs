@@ -11,7 +11,7 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 
 # ECS - Service
 resource "aws_ecs_service" "express-service" {
-  name             = "express-dev"
+  name             = "express-${var.env}"
   desired_count    = 1
   launch_type      = "FARGATE"
   platform_version = "1.4.0"
@@ -51,14 +51,28 @@ resource "aws_ecs_task_definition" "terraform-task-definition" {
       essential = true
       portMappings = [
         {
-          containerPort = 8080
-          hostPort      = 80
+          containerPort = 8088
+          hostPort      = 8088
         }
-      ]
+      ],
+      logConfiguration: {
+        "logDriver": "awslogs",
+        "options": {
+          "awslogs-group": "/fargate/service/express-${var.env}",
+          "awslogs-region": var.aws_region,
+          "awslogs-stream-prefix": "ecs"
+        }
+      }
     }
   ])
 
   tags = merge({Name = "${var.env}-terraform-task-definition"}, var.tags)
+}
+
+resource "aws_cloudwatch_log_group" "logs" {
+  name              = "/fargate/service/express-${var.env}"
+  retention_in_days = var.logs-retention-in-days
+  tags              = var.tags
 }
 
 output "ecs_cluster" {

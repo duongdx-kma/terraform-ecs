@@ -27,3 +27,8 @@ variable vpc_endpoint_subnet_ids {
   type = list(string)
   description = "List of vpc_endpoint_subnet_ids"
 }
+
+variable vpc-private-route-table-id {
+  type = list(string)
+  description = "List of vpc_endpoint_subnet_ids"
+}

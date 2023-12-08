@@ -1,8 +1,7 @@
 resource "aws_vpc_endpoint" "s3-gateway-endpoint" {
   service_name       = "com.amazonaws.${var.aws_region}.s3"
   vpc_endpoint_type  = "Gateway"
-  security_group_ids = var.vpc_endpoint_sg_ids
-  subnet_ids         = var.vpc_endpoint_subnet_ids
+  route_table_ids    = var.vpc-private-route-table-id
   vpc_id             = var.vpc_id
 }
 

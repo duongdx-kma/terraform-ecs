@@ -100,6 +100,33 @@ resource "aws_route_table_association" "main-public-1-c" {
   route_table_id = aws_route_table.main-public-route.id
 }
 
+# private route table
+resource "aws_route_table" "main-private-route" {
+  vpc_id = aws_vpc.main.id
+
+  tags = {
+    Name = "main-private-route"
+  }
+}
+
+#############################################################################
+# route associations private subnet
+resource "aws_route_table_association" "main-private-1-a" {
+  subnet_id      = aws_subnet.main-private-a.id
+  route_table_id = aws_route_table.main-private-route.id
+}
+
+resource "aws_route_table_association" "main-private-1-b" {
+  subnet_id      = aws_subnet.main-private-b.id
+  route_table_id = aws_route_table.main-private-route.id
+}
+
+resource "aws_route_table_association" "main-private-1-c" {
+  subnet_id      = aws_subnet.main-private-c.id
+  route_table_id = aws_route_table.main-private-route.id
+}
+
+
 
 output "vpc_id" {
   value = aws_vpc.main.id
@@ -122,4 +149,8 @@ output "public_subnets" {
     aws_subnet.main-public-c.id
   ]
   description = "List ID of the public subnets"
+}
+
+output "private-route-table-id" {
+  value = aws_route_table.main-private-route.id
 }

@@ -40,3 +40,9 @@ variable private-sg-ids {
 variable target-group-arn {
   type = string
 }
+
+variable logs-retention-in-days {
+  type        = number
+  default     = 1
+  description = "Specifies the number of days you want to retain log events"
+}
