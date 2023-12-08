@@ -133,6 +133,11 @@ output "vpc_id" {
   description = "The ID of the VPC"
 }
 
+output "vpc_cidr_block" {
+  value = aws_vpc.main.cidr_block
+  description = "The cidr_block of the VPC"
+}
+
 output "private_subnets" {
   value = [
     aws_subnet.main-private-a.id,

@@ -106,7 +106,6 @@ resource "aws_iam_policy" "ecs-task-execution-policy" {
           "ecr:BatchCheckLayerAvailability",
           "ecr:GetDownloadUrlForLayer",
           "ecr:BatchGetImage",
-          "ecr:*",
         ]
       }
     ]

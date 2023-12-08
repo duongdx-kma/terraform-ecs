@@ -20,7 +20,7 @@ module "vpc-endpoint" {
   source                     = "../modules/vpc-endpoint"
   aws_region                 = var.aws_region
   vpc_endpoint_sg_ids        = [module.security-groups.endpoint-sg-id]
-  vpc_endpoint_subnet_ids    = slice(module.vpc.private_subnets, 0, 2)
+  vpc_endpoint_subnet_ids    = slice(module.vpc.private_subnets, 0, 2) // private-subnet-a, private-subnet-b
   vpc-private-route-table-id = [module.vpc.private-route-table-id]
 }
 
@@ -49,10 +49,6 @@ module "security-groups" {
     from_port: "443"
     to_port: "443"
     protocol: "TCP"
-  }, {
-    from_port: "443"
-    to_port: "443"
-    protocol: "TCP"
   }]
 }
 
@@ -72,7 +68,7 @@ module "alb" {
   lb-listen-port        = var.lb-listen-port
   health-check-count    = 3
   lb-listen-protocol    = var.lb-listen-protocol
-  alb-public-subnet-ids = slice(module.vpc.public_subnets, 0, 2)
+  alb-public-subnet-ids = slice(module.vpc.public_subnets, 0, 2) // public-subnet-a, public-subnet-b
 }
 
 module "policies" {
@@ -91,7 +87,7 @@ module "ecs" {
   private-sg-ids          = [module.security-groups.instance-sg-id]
   repository-url          = "240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/my-ecr"
   target-group-arn        = module.alb.target-group-arn
-  private-subnet-ids      = slice(module.vpc.private_subnets, 0, 2)
+  private-subnet-ids      = slice(module.vpc.private_subnets, 0, 2) // private-subnet-a, private-subnet-b
   task-execution-role-arn = module.roles.ecs-task-execution-role.arn
 }
 
