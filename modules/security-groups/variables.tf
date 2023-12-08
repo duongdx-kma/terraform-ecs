@@ -20,7 +20,7 @@ variable tags {
 
 variable alb-ingress {
   type = list(object({
-    form_port: number
+    from_port: number
     to_port: number
     protocol: string
     cidr_blocks: list(string)
@@ -29,13 +29,11 @@ variable alb-ingress {
   description = "application load balancer ingress"
 }
 
-
 variable instance-ingress {
   type = list(object({
-    form_port: number
+    from_port: number
     to_port: number
     protocol: string
-    security_groups: list(string)
   }))
 
   description = "instance private ingress"
@@ -43,10 +41,9 @@ variable instance-ingress {
 
 variable endpoint-ingress {
   type = list(object({
-    form_port: number
+    from_port: number
     to_port: number
     protocol: string
-    cidr_blocks: list(string)
   }))
 
   description = "endpoint ingress"

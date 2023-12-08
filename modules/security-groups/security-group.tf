@@ -5,7 +5,7 @@ resource "aws_security_group" "alb-sg" {
     for_each = var.alb-ingress
     content {
       from_port   = ingress.value.from_port
-      to_port     = ingress.value.from_port
+      to_port     = ingress.value.to_port
       protocol    = ingress.value.protocol
       cidr_blocks = ingress.value.cidr_blocks
     }
@@ -20,9 +20,9 @@ resource "aws_security_group" "instance-sg" {
     for_each = var.instance-ingress
     content {
       from_port       = ingress.value.from_port
-      to_port         = ingress.value.from_port
+      to_port         = ingress.value.to_port
       protocol        = ingress.value.protocol
-      security_groups = ingress.value.security_groups
+      security_groups = [aws_security_group.alb-sg.id]
     }
   }
   tags = merge({Name = "${var.env}-instance-sg"}, var.tags)
@@ -34,11 +34,23 @@ resource "aws_security_group" "endpoint-sg" {
   dynamic "ingress" {
     for_each = var.endpoint-ingress
     content {
-      from_port   = ingress.value.from_port
-      to_port     = ingress.value.from_port
-      protocol    = ingress.value.protocol
-      cidr_blocks = ingress.value.cidr_blocks
+      from_port       = ingress.value.from_port
+      to_port         = ingress.value.to_port
+      protocol        = ingress.value.protocol
+      security_groups = [aws_security_group.instance-sg.id]
     }
   }
   tags = merge({Name = "${var.env}-endpoint-sg"}, var.tags)
+}
+
+output "alb-sg-id" {
+  value = aws_security_group.alb-sg.id
+}
+
+output "instance-sg-id" {
+  value = aws_security_group.instance-sg.id
+}
+
+output "endpoint-sg-id" {
+  value = aws_security_group.endpoint-sg.id
 }

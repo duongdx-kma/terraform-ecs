@@ -16,7 +16,7 @@ variable deregistration_delay {
 
 # The path to the health check for the load balancer to know if the container(s) are ready
 variable health_check {
-  default = '/'
+  default = "/"
 }
 
 # How often to check the liveliness of the container
@@ -34,9 +34,9 @@ variable health_check_matcher {
   default = 200
 }
 
-variable alb-http-sg-id {
-  type = string
-  description = "alb-http-sg-id"
+variable alb-sg-ids {
+  type = list(string)
+  description = "alb-http-sg-ids"
 }
 
 variable env {

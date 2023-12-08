@@ -2,8 +2,8 @@
 resource "aws_lb" "main-alb" {
   name               = "main-alb"
   internal           = false
-  subnets            = [var.alb-public-subnet-ids]
-  security_groups    = [var.alb-http-sg-id]
+  subnets            = var.alb-public-subnet-ids
+  security_groups    = var.alb-sg-ids
   load_balancer_type = "application"
 
   tags = merge({Name = "${var.env}-main-alb"}, var.tags)
@@ -43,6 +43,18 @@ resource "aws_lb_listener" "alb-listener" {
   }
 }
 
-output "lb_dns" {
+output "lb-dns" {
   value = aws_lb.main-alb.dns_name
+}
+
+output "lb-zone-id" {
+  value = aws_lb.main-alb.zone_id
+}
+
+output "lb-arn" {
+  value = aws_lb.main-alb.arn
+}
+
+output "target-group-arn" {
+  value = aws_lb_target_group.alb-target-group.arn
 }

@@ -7,3 +7,7 @@ variable task-role-name {
   type = string
   description = "task-role-name"
 }
+
+variable "alb-arn" {
+  type = string
+}

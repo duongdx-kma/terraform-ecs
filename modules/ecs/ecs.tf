@@ -1,9 +1,12 @@
 # ECS - cluster
 resource "aws_ecs_cluster" "terraform-cluster" {
   name               = "terraform-cluster"
-  capacity_providers = ["FARGATE"]
-
   tags = merge({Name = "${var.env}-terraform-cluster"}, var.tags)
+}
+
+resource "aws_ecs_cluster_capacity_providers" "example" {
+  cluster_name = aws_ecs_cluster.terraform-cluster.name
+  capacity_providers = ["FARGATE"]
 }
 
 # ECS - Service
@@ -15,10 +18,10 @@ resource "aws_ecs_service" "express-service" {
   cluster          = aws_ecs_cluster.terraform-cluster.id
   task_definition  = aws_ecs_task_definition.terraform-task-definition.arn
 
-  ordered_placement_strategy {
-    type  = "binpack"
-    field = "cpu"
+  lifecycle {
+    ignore_changes = [desired_count]
   }
+
   network_configuration {
     subnets = var.private-subnet-ids
     security_groups = var.private-sg-ids
