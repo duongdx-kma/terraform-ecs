@@ -19,9 +19,10 @@
 > docker push $REPOSITORY_URI:$IMAGE_TAG
 > echo "push doneeee"
 
-4. setting profile: duongdinhxuan_duong-admin
-5. setup jenkins : jenkins will run: terraform and provision ECS services
+4. setting profile: su -u jenkins and setting duongdinhxuan_duong-admin
+5. jenkins install Plugin: Parameterized Trigger
+6. setup jenkins : jenkins will run: terraform and provision ECS services
 > cd dev
 > terraform init
-> terraform apply -auto-approve -var express-service-count=1
+> terraform apply -auto-approve -var express-service-count=1 -var commit-id=${COMMIT_ID}
 > 

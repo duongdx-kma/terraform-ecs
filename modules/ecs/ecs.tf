@@ -38,7 +38,6 @@ resource "aws_ecs_service" "express-service" {
 
 # ECS - task definition
 resource "aws_ecs_task_definition" "terraform-task-definition" {
-  count                    = var.express-service-count
   family                   = "service"
   network_mode             = "awsvpc"
   cpu                      = 256
@@ -72,7 +71,6 @@ resource "aws_ecs_task_definition" "terraform-task-definition" {
 }
 
 resource "aws_cloudwatch_log_group" "logs" {
-  count             = var.express-service-count
   name              = "/fargate/service/express-${var.env}"
   retention_in_days = var.logs-retention-in-days
   tags              = var.tags
