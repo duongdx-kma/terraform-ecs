@@ -46,3 +46,9 @@ variable logs-retention-in-days {
   default     = 1
   description = "Specifies the number of days you want to retain log events"
 }
+
+variable express-service-count {
+  type        = number
+  default     = 0
+  description = "by default we won't provision service. We need provision and push image to ECR first"
+}
