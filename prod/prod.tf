@@ -85,9 +85,10 @@ module "ecs" {
   aws_region              = var.aws_region
   task-role-arn           = module.roles.ecs-task-role.arn
   private-sg-ids          = [module.security-groups.instance-sg-id]
-  repository-url          = "240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/my-ecr"
+  repository-url          = "240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/my-ecr:latest"
   target-group-arn        = module.alb.target-group-arn
   private-subnet-ids      = slice(module.vpc.private_subnets, 0, 2) // private-subnet-a, private-subnet-b
+  express-service-count   = var.express-service-count
   task-execution-role-arn = module.roles.ecs-task-execution-role.arn
 }
 

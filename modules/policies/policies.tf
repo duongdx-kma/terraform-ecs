@@ -112,6 +112,24 @@ resource "aws_iam_policy" "ecs-task-execution-policy" {
   })
 }
 
+# allow jenkins instance Full privilege with ECR
+resource "aws_iam_policy" "jenkins-policy" {
+  name = "jenkins-policy"
+  path = "/"
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect   = "Allow"
+        Resource = "*"
+        Action   = [
+          "ecr:*",
+        ]
+      }
+    ]
+  })
+}
+
 resource "aws_iam_policy" "ecs_service_elb" {
   name = "ecs_service_elb"
   path = "/"
@@ -156,4 +174,9 @@ resource "aws_iam_role_policy_attachment" "ecs_service_standard" {
 resource "aws_iam_role_policy_attachment" "ecs_service_scaling" {
   role = var.task-role-name
   policy_arn = aws_iam_policy.ecs_service_scaling.arn
+}
+
+resource "aws_iam_role_policy_attachment" "jenkins-attachment" {
+  role = var.jenkins-instance-role-name
+  policy_arn = aws_iam_policy.jenkins-policy.arn
 }
