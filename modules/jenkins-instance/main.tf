@@ -55,11 +55,20 @@ resource "aws_iam_policy" "jenkins-policy" {
   policy = jsonencode({
     Version = "2012-10-17"
     Statement = [
+      # get ECR authorize, pull push images
       {
         Effect   = "Allow"
         Resource = "*"
         Action   = [
           "ecr:*",
+        ]
+      },
+      # check, pull, put state in s3
+      {
+        Effect   = "Allow"
+        Resource = "*"
+        Action   = [
+          "s3:*",
         ]
       }
     ]
