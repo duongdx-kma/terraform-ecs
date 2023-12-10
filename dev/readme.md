@@ -23,8 +23,12 @@
 5. jenkins install Plugin: Parameterized Trigger
 6. setup jenkins : jenkins will run: terraform and provision ECS services
 > cd dev
+> echo "---------------------------------------------------------"
 > echo $COMMIT_ID
 > COMMIT_HASH=$(echo ${$COMMIT_ID} | cut -c 1-7)
 > IMAGE_TAG=${COMMIT_HASH:=latest}
+> echo "--------------1111"
+> echo $IMAGE_TAG
+> echo "--------------1111"
+> terraform init
 > terraform apply -auto-approve -var express-service-count=1 -var commit-id=${IMAGE_TAG}
-> 
