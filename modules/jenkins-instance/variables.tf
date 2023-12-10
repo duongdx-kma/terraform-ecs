@@ -4,23 +4,17 @@ variable ubuntu-ami {
   type = string
 }
 
-variable public-subnet-id {
-  type = string
-}
-
-variable jenkins-securitygroup-ids {
-  type = list(string)
-}
-
 variable instance-device-name {
   type = string
 }
 
-variable availability-zone {
-  type = string
-}
+variable jenkins-ingress {
+  type = list(object({
+    from_port: number
+    to_port: number
+    protocol: string
+    cidr_blocks: list(string)
+  }))
 
-variable jenkins-in-profile-name {
-  type = string
-  description = "jenkins instance profile name"
+  description = "jenkins ingress"
 }

@@ -8,11 +8,6 @@ variable task-role-name {
   description = "task-role-name"
 }
 
-variable jenkins-instance-role-name {
-  type = string
-  description = "jenkins-instance-role-name"
-}
-
 variable "alb-arn" {
   type = string
 }

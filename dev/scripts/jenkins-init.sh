@@ -44,13 +44,11 @@ systemctl enable docker
 service docker start
 service jenkins restart
 
-# install pip
-wget -q https://bootstrap.pypa.io/get-pip.py
-python get-pip.py
-python3 get-pip.py
-rm -f get-pip.py
 # install awscli
-pip install awscli
+curl https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip -o awscliv2.zip
+unzip awscliv2.zip
+sudo ./aws/install
+aws --version
 
 # install terraform
 wget -q https://releases.hashicorp.com/terraform/${TERRAFORM_VERSION}/terraform_${TERRAFORM_VERSION}_linux_amd64.zip \

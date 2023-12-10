@@ -66,7 +66,10 @@ variable path-to-public-key {
 }
 
 variable ubuntu-ami {
-  default = "ami-078c1149d8ad719a7"
+  type = map(string)
+  default = {
+    "ap-southeast-1": "ami-078c1149d8ad719a7"
+  }
 }
 
 variable commit-id {

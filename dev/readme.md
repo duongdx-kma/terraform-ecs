@@ -1,11 +1,25 @@
 1. terraform apply
-2. setup jenkins : build image and push image to ECR
-> docker build -t ECR_URL:latest code
-> docker tag ECR_URL:latest ECR_URL:${GIT_COMMIT}
-> docker push ECR_URL:latest
-> docker push ECR_URL:${GIT_COMMIT}
-> 
-3. setup jenkins : jenkins will run: terraform and provision ECS services
+2. Run: aws configure
+3. setup jenkins : build image and push image to ECR
+COMMIT_HASH=$(echo ${GIT_COMMIT} | cut -c 1-7)
+IMAGE_TAG=${COMMIT_HASH:=latest}
+REPOSITORY_URI="240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/express-ecr"
+
+echo "######################################################"
+docker build -t $REPOSITORY_URI:latest code
+docker tag $REPOSITORY_URI:latest express-ecr:latest $REPOSITORY_URI:$IMAGE_TAG
+echo "build doneeee"
+
+echo "######################################################"
+aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 240993297305.dkr.ecr.ap-southeast-1.amazonaws.com
+echo "login doneeee"
+
+echo "######################################################"
+docker push $REPOSITORY_URI:latest
+docker push $REPOSITORY_URI:$IMAGE_TAG
+echo "push doneeee"
+
+4. setup jenkins : jenkins will run: terraform and provision ECS services
 > cd terraform-ecs/dev
 > terraform init
 > terraform apply -var express-service-count=1

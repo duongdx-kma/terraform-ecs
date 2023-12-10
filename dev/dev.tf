@@ -38,23 +38,6 @@ module "security-groups" {
     cidr_blocks: ["0.0.0.0/0"]
   }]
 
-  jenkins-ingress = [{
-    from_port: 22
-    to_port: 22
-    protocol: "TCP"
-    cidr_blocks: ["0.0.0.0/0"]
-  }, {
-    from_port: 80
-    to_port: 80
-    protocol: "TCP"
-    cidr_blocks: ["0.0.0.0/0"]
-  }, {
-    from_port: 8080
-    to_port: 8080
-    protocol: "TCP"
-    cidr_blocks: ["0.0.0.0/0"]
-  }]
-
   instance-ingress = [{
     from_port: var.instance-port
     to_port: var.instance-port
@@ -92,19 +75,31 @@ module "policies" {
   alb-arn                    = module.alb.lb-arn
   task-role-name             = module.roles.ecs-task-role.name
   task-execution-role-name   = module.roles.ecs-task-execution-role.name
-  jenkins-instance-role-name = module.roles.jenkins-instance-role.name
 }
 
 module "jenkins-instance" {
   source                    = "../modules/jenkins-instance"
   user-data                 = data.cloudinit_config.cloudinit-jenkins.rendered
   public-key                = file(var.path-to-public-key)
-  ubuntu-ami                = var.ubuntu-ami
-  public-subnet-id          = module.vpc.public_subnets[0]
+  ubuntu-ami                = var.ubuntu-ami[var.aws_region]
   instance-device-name      = var.instance-device-name
-  availability-zone         = module.vpc.public_zones[0]
-  jenkins-in-profile-name   = module.roles.jenkins-instance-profile-name
-  jenkins-securitygroup-ids = [module.security-groups.jenkins-sg-id]
+
+  jenkins-ingress = [{
+    from_port: 22
+    to_port: 22
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }, {
+    from_port: 80
+    to_port: 80
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }, {
+    from_port: 8080
+    to_port: 8080
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }]
 }
 
 module "ecs" {
