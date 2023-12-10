@@ -83,7 +83,7 @@ module "jenkins-instance" {
   public-key                = file(var.path-to-public-key)
   ubuntu-ami                = var.ubuntu-ami[var.aws_region]
   instance-device-name      = var.instance-device-name
-
+  instance-type             = var.instance-type
   jenkins-ingress = [{
     from_port: 22
     to_port: 22

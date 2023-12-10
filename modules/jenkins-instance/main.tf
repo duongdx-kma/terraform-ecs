@@ -83,7 +83,7 @@ resource "aws_iam_role_policy_attachment" "jenkins-attachment" {
 # instance
 resource "aws_instance" "jenkins-instance" {
   ami           = var.ubuntu-ami
-  instance_type = "t2.micro"
+  instance_type = var.instance-type
   iam_instance_profile = aws_iam_instance_profile.jenkins-instance-profile.name
 
   # the security group

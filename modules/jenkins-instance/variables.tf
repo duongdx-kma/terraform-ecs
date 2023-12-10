@@ -4,6 +4,10 @@ variable ubuntu-ami {
   type = string
 }
 
+variable instance-type {
+  type = string
+}
+
 variable instance-device-name {
   type = string
 }

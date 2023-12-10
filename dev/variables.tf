@@ -57,6 +57,10 @@ variable instance-device-name {
   default = "/dev/xvdh"
 }
 
+variable instance-type {
+  default = "t2.medium"
+}
+
 variable terraform-version {
   default = "1.6.5"
 }
