@@ -122,9 +122,9 @@ module "ecs" {
 ##  ecs_service = module.ecs.ecs_service
 ##}
 #
-#module "route53" {
-#  source         = "../modules/route53"
-#  elb-dns-name   = module.alb.lb-dns
-#  elb-zone-id    = module.alb.lb-zone-id
-#  hosted_zone_id = "Z10021163CFESZLAG77PX"
-#}
+module "route53" {
+  source         = "../modules/route53"
+  elb-dns-name   = module.alb.lb-dns
+  elb-zone-id    = module.alb.lb-zone-id
+  hosted_zone_id = "Z10021163CFESZLAG77PX"
+}

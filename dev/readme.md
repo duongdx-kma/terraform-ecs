@@ -18,11 +18,13 @@
 > docker push $REPOSITORY_URI:latest
 > docker push $REPOSITORY_URI:$IMAGE_TAG
 > echo "push doneeee"
-
+> params: COMMIT_ID=${GIT_COMMIT}
 4. setting profile: su -u jenkins and setting duongdinhxuan_duong-admin
 5. jenkins install Plugin: Parameterized Trigger
 6. setup jenkins : jenkins will run: terraform and provision ECS services
 > cd dev
-> terraform init
-> terraform apply -auto-approve -var express-service-count=1 -var commit-id=${COMMIT_ID}
+> echo $COMMIT_ID
+> COMMIT_HASH=$(echo ${$COMMIT_ID} | cut -c 1-7)
+> IMAGE_TAG=${COMMIT_HASH:=latest}
+> terraform apply -auto-approve -var express-service-count=1 -var commit-id=${IMAGE_TAG}
 > 
