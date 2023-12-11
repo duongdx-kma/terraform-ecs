@@ -1,9 +1,8 @@
-# need provision ecr and push docker image first
-#module "ecr" {
-#  source = "../modules/ecr"
-#  aws_region = var.aws_region
-#  tags = var.tags
-#}
+module "ecr" {
+  source     = "../modules/ecr"
+  aws_region = var.aws_region
+  tags       = var.tags
+}
 
 # VPC module
 module "vpc" {
@@ -14,10 +13,10 @@ module "vpc" {
 }
 
 module "vpc-endpoint" {
+  source                     = "../modules/vpc-endpoint"
   env                        = var.env
   tags                       = var.tags
   vpc_id                     = module.vpc.vpc_id
-  source                     = "../modules/vpc-endpoint"
   aws_region                 = var.aws_region
   vpc_endpoint_sg_ids        = [module.security-groups.endpoint-sg-id]
   vpc_endpoint_subnet_ids    = slice(module.vpc.private_subnets, 0, 2) // private-subnet-a, private-subnet-b
@@ -26,10 +25,10 @@ module "vpc-endpoint" {
 
 # Security group module
 module "security-groups" {
+  source     = "../modules/security-groups"
   env        = var.env
   tags       = var.tags
   vpc_id     =  module.vpc.vpc_id
-  source     = "../modules/security-groups"
   aws_region = var.aws_region
 
   alb-ingress = [{
@@ -60,9 +59,9 @@ module "roles" {
 }
 
 module "alb" {
+  source                = "../modules/alb"
   env                   = var.env
   tags                  = var.tags
-  source                = "../modules/alb"
   vpc_id                = module.vpc.vpc_id
   alb-sg-ids            = [module.security-groups.alb-sg-id]
   lb-listen-port        = var.lb-listen-port
@@ -72,31 +71,57 @@ module "alb" {
 }
 
 module "policies" {
-  source                    = "../modules/policies"
-  alb-arn                  = module.alb.lb-arn
-  task-role-name           = module.roles.ecs-task-role.name
-  task-execution-role-name = module.roles.ecs-task-execution-role.name
+  source                     = "../modules/policies"
+  alb-arn                    = module.alb.lb-arn
+  task-role-name             = module.roles.ecs-task-role.name
+  task-execution-role-name   = module.roles.ecs-task-execution-role.name
+}
+
+module "jenkins-instance" {
+  source                    = "../modules/jenkins-instance"
+  user-data                 = data.cloudinit_config.cloudinit-jenkins.rendered
+  public-key                = file(var.path-to-public-key)
+  ubuntu-ami                = var.ubuntu-ami[var.aws_region]
+  instance-device-name      = var.instance-device-name
+  instance-type             = var.instance-type
+  jenkins-ingress = [{
+    from_port: 22
+    to_port: 22
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }, {
+    from_port: 80
+    to_port: 80
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }, {
+    from_port: 8080
+    to_port: 8080
+    protocol: "TCP"
+    cidr_blocks: ["0.0.0.0/0"]
+  }]
 }
 
 module "ecs" {
+  source                  = "../modules/ecs"
   env                     = var.env
   tags                    = var.tags
-  source                  = "../modules/ecs"
   aws_region              = var.aws_region
   task-role-arn           = module.roles.ecs-task-role.arn
   private-sg-ids          = [module.security-groups.instance-sg-id]
-  repository-url          = "240993297305.dkr.ecr.ap-southeast-1.amazonaws.com/my-ecr"
+  repository-url          = "${module.ecr.ecr-output}:${var.commit-id}"
   target-group-arn        = module.alb.target-group-arn
   private-subnet-ids      = slice(module.vpc.private_subnets, 0, 2) // private-subnet-a, private-subnet-b
+  express-service-count   = var.express-service-count
   task-execution-role-arn = module.roles.ecs-task-execution-role.arn
 }
 
-module "auto-scaling" {
-  source      = "../modules/auto-scaling"
-  ecs_cluster = module.ecs.ecs_cluster
-  ecs_service = module.ecs.ecs_service
-}
-
+##module "auto-scaling" {
+##  source      = "../modules/auto-scaling"
+##  ecs_cluster = module.ecs.ecs_cluster
+##  ecs_service = module.ecs.ecs_service
+##}
+#
 module "route53" {
   source         = "../modules/route53"
   elb-dns-name   = module.alb.lb-dns
