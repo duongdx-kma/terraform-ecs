@@ -1,3 +1,4 @@
-resource "aws_ecr_repository" "my-ecr" {
-  name = "my-ecr"
+resource "aws_ecr_repository" "express-ecr" {
+  name         = "express-ecr"
+  force_delete = true
 }

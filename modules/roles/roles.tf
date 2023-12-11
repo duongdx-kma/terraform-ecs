@@ -10,6 +10,7 @@ data "aws_iam_policy_document" "ecs-task-assume-role" {
     }
   }
 }
+
 data "aws_iam_policy_document" "ecs-task-exec-assume-role" {
   statement {
     sid     = "AllowEcsTaskExecutionAssumeRole"
