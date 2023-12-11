@@ -30,15 +30,44 @@ resource "aws_lb_target_group" "alb-target-group" {
 }
 
 # define application load balancer - listener
-resource "aws_lb_listener" "alb-listener" {
+resource "aws_lb_listener" "alb-listener-https" {
+  count             = var.lb-listen-port == 443 ? 1 : 0
   load_balancer_arn = aws_lb.main-alb.arn
   port              = var.lb-listen-port
   protocol          = var.lb-listen-protocol
-#  ssl_policy        = var.env == "prod" ? "ELBSecurityPolicy-2016-08" : ""
-#  certificate_arn   = var.env == "prod" ? var.certificate_arn : ""
+  certificate_arn = var.certificate_arn
 
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.alb-target-group.arn
+  }
+}
+
+resource "aws_lb_listener" "alb-listener-http" {
+  count             = var.lb-listen-port == 80 ? 1 : 0
+  load_balancer_arn = aws_lb.main-alb.arn
+  port              = var.lb-listen-port
+  protocol          = var.lb-listen-protocol
+
+  default_action {
+    type             = "forward"
+    target_group_arn = aws_lb_target_group.alb-target-group.arn
+  }
+}
+
+resource "aws_lb_listener" "redirect" {
+  count             = var.lb-listen-port == 443 ? 1 : 0
+  load_balancer_arn = aws_lb.main-alb.arn
+  port              = "80"
+  protocol          = "HTTP"
+
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
+    }
   }
 }

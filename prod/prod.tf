@@ -65,9 +65,10 @@ module "alb" {
   vpc_id                = module.vpc.vpc_id
   alb-sg-ids            = [module.security-groups.alb-sg-id]
   lb-listen-port        = var.lb-listen-port
-  health-check-count    = 3
   lb-listen-protocol    = var.lb-listen-protocol
+  health-check-count    = 3
   alb-public-subnet-ids = slice(module.vpc.public_subnets, 0, 2) // public-subnet-a, public-subnet-b
+  certificate_arn       = aws_acm_certificate.certificate.arn
 }
 
 module "policies" {
@@ -116,15 +117,32 @@ module "ecs" {
   task-execution-role-arn = module.roles.ecs-task-execution-role.arn
 }
 
-##module "auto-scaling" {
-##  source      = "../modules/auto-scaling"
-##  ecs_cluster = module.ecs.ecs_cluster
-##  ecs_service = module.ecs.ecs_service
-##}
-#
 module "route53" {
   source         = "../modules/route53"
   elb-dns-name   = module.alb.lb-dns
   elb-zone-id    = module.alb.lb-zone-id
-  hosted_zone_id = "Z10021163CFESZLAG77PX"
+  hosted_zone_id = var.hosted_zone_id
+}
+
+# Create an ACM Certificate
+resource "aws_acm_certificate" "certificate" {
+  domain_name       = var.root_domain_name
+  validation_method = "DNS"
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_route53_record" "cert_dns" {
+  allow_overwrite = true
+  name            =  tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_name
+  records         = [tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_value]
+  type            = tolist(aws_acm_certificate.certificate.domain_validation_options)[0].resource_record_type
+  zone_id         = var.hosted_zone_id
+  ttl = 60
+}
+
+resource "aws_acm_certificate_validation" "hello_cert_validate" {
+  certificate_arn         = aws_acm_certificate.certificate.arn
+  validation_record_fqdns = [aws_route53_record.cert_dns.fqdn]
 }

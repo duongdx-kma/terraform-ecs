@@ -20,13 +20,13 @@ variable tags {
 # load balancer listen port
 variable lb-listen-port {
   type = number
-  default = 80
+  default = 443
 }
 
 # load balancer listen protocol
 variable lb-listen-protocol {
   type = string
-  default = "HTTP"
+  default = "HTTPS"
 }
 
 # load balancer listen port
@@ -78,4 +78,14 @@ variable ubuntu-ami {
 
 variable commit-id {
   default = ""
+}
+
+variable "root_domain_name" {
+  type    = string
+  default = "duongdx.com"
+}
+
+variable "hosted_zone_id" {
+  type    = string
+  default = "Z10021163CFESZLAG77PX"
 }
