@@ -18,5 +18,6 @@
 > echo $COMMIT_ID
 > COMMIT_HASH=$(echo ${COMMIT_ID} | cut -c 1-7)
 > IMAGE_TAG=${COMMIT_HASH:=latest}
+> sh scripts/append.sh
 > terraform init
 > terraform apply -auto-approve -var express-service-count=1 -var commit-id=${IMAGE_TAG}
