@@ -74,11 +74,3 @@ resource "aws_cloudwatch_log_group" "logs" {
   retention_in_days = var.logs-retention-in-days
   tags              = var.tags
 }
-
-output "ecs_cluster" {
-  value = aws_ecs_cluster.terraform-cluster
-}
-
-output "ecs_service" {
-  value = aws_ecs_service.express-service
-}
