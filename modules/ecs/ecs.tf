@@ -11,7 +11,6 @@ resource "aws_ecs_cluster_capacity_providers" "example" {
 
 # ECS - Service
 resource "aws_ecs_service" "express-service" {
-  count            = var.express-service-count
   name             = "express-${var.env}"
   desired_count    = 1
   launch_type      = "FARGATE"
@@ -48,7 +47,7 @@ resource "aws_ecs_task_definition" "terraform-task-definition" {
   container_definitions = jsonencode([
     {
       name      = "express-app"
-      image     = var.repository-url
+      image     = "${var.repository-url}:latest"
       essential = true
       portMappings = [
         {

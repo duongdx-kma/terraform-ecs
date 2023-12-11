@@ -156,15 +156,6 @@ output "public_subnets" {
   description = "List ID of the public subnets"
 }
 
-output "public_zones" {
-  value = [
-    aws_subnet.main-public-a.availability_zone,
-    aws_subnet.main-public-b.availability_zone,
-    aws_subnet.main-public-c.availability_zone
-  ]
-  description = "List ID of the public subnets"
-}
-
 output "private-route-table-id" {
   value = aws_route_table.main-private-route.id
 }
